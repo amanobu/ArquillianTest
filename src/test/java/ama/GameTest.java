@@ -8,6 +8,10 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.UserTransaction;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -100,5 +104,56 @@ public class GameTest {
             retrievedGameTitles.add(game.getTitle());
         }
         Assert.assertTrue(retrievedGameTitles.containsAll(Arrays.asList(GAME_TITLES)));
+    }
+
+    @Test
+    public void shouldFindAllGamesUsingCriteriaApi() throws Exception {
+        // given
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Game> criteria = builder.createQuery(Game.class);
+
+        Root<Game> game = criteria.from(Game.class);
+        criteria.select(game);
+        // TIP: もしJPA 2メタモデルを使いたくない場合は、
+        // この get() メソッドコールを get("id") に変更できます
+        criteria.orderBy(builder.asc(game.get(Game_.id)));
+        // WHERE句が無いので、すべてのselectを意味します
+
+        // when
+        System.out.println("Selecting (using Criteria)...");
+        List<Game> games = em.createQuery(criteria).getResultList();
+
+        // then
+        System.out.println("Found " + games.size() + " games (using Criteria):");
+        assertContainsAllGames(games);
+    }
+
+    @Test
+    public void sqltest() throws Exception {
+        //新しいゲームを追加
+        Game game = new Game("Super Mario Maker");
+        em.persist(game);
+        dump();//全データ出力
+        
+        //Sper Mario Makerのタイトルを検索
+        String squery = "select g from Game g where g.title = :title";
+        Query query = em.createQuery(squery);
+        query.setParameter("title", "Super Mario Maker");
+        Game selectgame = (Game)query.getSingleResult();
+        
+        //insertしたのであるはずse
+        Assert.assertEquals("Super Mario Maker", selectgame.getTitle());
+        
+        //それを消す
+        em.remove(game);
+        selectgame = em.find(Game.class, selectgame.getId());
+        //削除したので無いはず
+        Assert.assertNull(selectgame);
+    }
+
+    public void dump() throws Exception {
+        String query = "select g from Game g";
+        List<Game> games = em.createQuery(query, Game.class).getResultList();
+        System.out.println("all:"+games);
     }
 }

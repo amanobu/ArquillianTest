@@ -7,6 +7,7 @@
     <persistence-unit name="test">
         <jta-data-source>jdbc/arquillian</jta-data-source>
         <properties>
+            <!-- Configures the database schema command. drop-and-create-tablesという値は、テスト実行毎に、EclipseLinkにJPAのエンティティで定義されているようにデータベースを作成するよう指示 -->
             <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
             <property name="eclipselink.logging.level.sql" value="FINE"/>
             <property name="eclipselink.logging.parameters" value="true"/>
