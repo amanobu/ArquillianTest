@@ -134,16 +134,16 @@ public class GameTest {
         Game game = new Game("Super Mario Maker");
         em.persist(game);
         dump();//全データ出力
-        
+
         //Sper Mario Makerのタイトルを検索
         String squery = "select g from Game g where g.title = :title";
         Query query = em.createQuery(squery);
         query.setParameter("title", "Super Mario Maker");
-        Game selectgame = (Game)query.getSingleResult();
-        
+        Game selectgame = (Game) query.getSingleResult();
+
         //insertしたのであるはずse
         Assert.assertEquals("Super Mario Maker", selectgame.getTitle());
-        
+
         //それを消す
         em.remove(selectgame);
         selectgame = em.find(Game.class, selectgame.getId());
@@ -154,6 +154,17 @@ public class GameTest {
     public void dump() throws Exception {
         String query = "select g from Game g";
         List<Game> games = em.createQuery(query, Game.class).getResultList();
-        System.out.println("all:"+games);
+        System.out.println("all:" + games);
     }
+    /*
+    @Test
+    //@UsingDataSet("Game.yml")
+    public void loadSQL() {
+        String squery = "select g from Game g where g.updateby = :updateby";
+        Query query = em.createQuery(squery);
+        query.setParameter("updateby", "import by Game.yml");
+        Game selectgame = (Game) query.getSingleResult();
+        Assert.assertNotNull(selectgame);
+    }
+     */
 }

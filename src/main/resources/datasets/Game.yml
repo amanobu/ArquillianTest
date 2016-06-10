@@ -1,0 +1,4 @@
+Game:
+  - id: 1
+    title: "Super Mario Galaxy 2"
+    updateby: "import by Game.yml"
