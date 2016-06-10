@@ -145,7 +145,7 @@ public class GameTest {
         Assert.assertEquals("Super Mario Maker", selectgame.getTitle());
         
         //それを消す
-        em.remove(game);
+        em.remove(selectgame);
         selectgame = em.find(Game.class, selectgame.getId());
         //削除したので無いはず
         Assert.assertNull(selectgame);
